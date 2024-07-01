@@ -1,0 +1,12 @@
+[package]
+name = "ndis-poc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.8", features = ["derive"] }
+ctrlc = "3.4.4"
+ipnetwork = "0.20.0"
+ndisapi = "0.6.0"
+smoltcp = { version = "0.11.0", features = ["proto-ipv4"] }
+windows = { version = "0.54.0", features = ["Win32_Foundation", "Win32_Security", "Win32_System_Registry", "Win32_System_Threading", "Win32_System_IO", "Win32_Storage_FileSystem", "Win32_NetworkManagement_Ndis", "Win32_Networking_WinSock", "Win32_NetworkManagement_IpHelper", "Win32_System_SystemInformation"] }
