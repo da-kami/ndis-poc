@@ -39,34 +39,6 @@ const HTTP_PORT: u16 = 80;
 
 /// Sets up a packet filter table for HTTP packets over IPv4 and IPv6.
 ///
-/// This function configures a packet filter table with five filters:
-///
-/// 1. Outgoing HTTP requests filter (IPv4): This filter redirects outgoing TCP packets with destination port 80 (HTTP) for processing in user mode. It applies to all network adapters.
-///
-/// 2. Incoming HTTP responses filter (IPv4): This filter redirects incoming TCP packets with source port 80 (HTTP) for processing in user mode. It applies to all network adapters.
-///
-/// 3. Outgoing HTTP requests filter (IPv6): This filter redirects outgoing TCP packets with destination port 80 (HTTP) for processing in user mode. It applies to all network adapters.
-///
-/// 4. Incoming HTTP responses filter (IPv6): This filter redirects incoming TCP packets with source port 80 (HTTP) for processing in user mode. It applies to all network adapters.
-///
-/// 5. Default pass filter: This filter passes all packets that are not matched by the previous filters without processing in user mode. It applies to all network adapters.
-///
-/// After setting up the filter table, this function applies it to the network interface using the `set_packet_filter_table` method of the `Ndisapi` object.
-///
-/// # Arguments
-///
-/// * `ndisapi` - A reference to the `Ndisapi` object that represents the network interface.
-///
-/// # Returns
-///
-/// This function returns a `Result` that indicates whether the operation succeeded or failed. If the operation succeeded, the `Result` contains `()`. If the operation failed, the `Result` contains an error.
-///
-/// # Examples
-///
-/// ------------------------
-///
-/// Notes by Daniel:
-///
 /// Modified to only redirect the outgoing traffic.
 /// We then modify the packet destination address and port to point towards the proxy.
 fn load_http_ipv4v6_filters(ndisapi: &Ndisapi) -> Result<()> {
@@ -206,25 +178,6 @@ fn load_http_ipv4v6_filters(ndisapi: &Ndisapi) -> Result<()> {
     ndisapi.set_packet_filter_table(&filter_table)
 }
 
-/// Entry point of the application.
-///
-/// This function parses the command line arguments, initializes the Ndisapi driver, sets up the packet filter table based on the selected filter set, and starts the packet processing loop.
-///
-/// The packet processing loop reads packets from the network interface, prints some information about each packet, and then re-injects the packets back into the network stack.
-///
-/// The loop continues until the user presses Ctrl-C.
-///
-/// # Arguments
-///
-/// None.
-///
-/// # Returns
-///
-/// This function returns a `Result` that indicates whether the operation succeeded or failed. If the operation succeeded, the `Result` contains `()`. If the operation failed, the `Result` contains an error.
-///
-/// # Examples
-///
-///
 fn main() -> Result<()> {
     // Parse command line arguments
     let Cli {
@@ -358,21 +311,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-/// Print detailed information about a network packet.
-///
-/// This function takes an `IntermediateBuffer` containing a network packet and prints various
-/// details about the packet, such as Ethernet, IPv4, IPv6, ICMPv4, ICMPv6, UDP, and TCP information.
-///
-/// # Arguments
-///
-/// * `packet` - A reference to an `IntermediateBuffer` containing the network packet.
-///
-/// # Examples
-///
-/// ```no_run
-/// let packet: IntermediateBuffer = ...;
-/// print_packet_info(&packet);
-/// ```
 fn modify_packet(packet: &mut IntermediateBuffer) {
     let mut eth_hdr = EthernetFrame::new_unchecked(packet.get_data_mut());
     match eth_hdr.ethertype() {
