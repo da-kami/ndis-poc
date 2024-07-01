@@ -1,10 +1,8 @@
 /// Note by Daniel:
 /// Example base on: https://github.com/wiresock/ndisapi-rs/blob/main/examples/filter.rs
 
-/// This example demonstrates the basic usage of the `set_packet_filter_table` API, showcasing different filter scenarios:
-///
-/// 1. Redirect only DNS packets for user mode processing.
-/// 2. Redirect only HTTP (TCP port 80) packets for user mode processing.
+/// Redirect only HTTP/HTTPS (TCP port 80 - 443) packets for user mode processing.
+/// For simplicity, we use a port-range (80 to 443).
 use clap::Parser;
 use ndisapi::{
     DataLinkLayerFilter, DirectionFlags, EthRequest, EthRequestMut, FilterFlags, FilterLayerFlags,
@@ -39,7 +37,7 @@ const HTTP_PORT: u16 = 80;
 
 /// Sets up a packet filter table for HTTP packets over IPv4 and IPv6.
 ///
-/// Modified to only redirect the outgoing traffic.
+/// Modified to only redirect the outgoing traffic on ports between 80 and 443 (to capture both HTTP and HTTPS).
 /// We then modify the packet destination address and port to point towards the proxy.
 fn load_http_ipv4v6_filters(ndisapi: &Ndisapi) -> Result<()> {
     let filter_table = StaticFilterTable::<5>::from_filters([
